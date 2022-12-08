@@ -4,6 +4,7 @@ import numpy as np
 
 cap = cv2.VideoCapture(0)
 
+
 # 実行
 while True:
 
@@ -27,7 +28,10 @@ while True:
             hsv_mask = cv2.inRange(hsv, HSVRange["lower"], HSVRange["upper"])
             # medianblurを用いてノイズ成分を除去
             blur_mask = cv2.medianBlur(hsv_mask, ksize=3)
-            cv2.imshow("hsv_mask", blur_mask)
+            blur_mask = cv2.cvtColor(blur_mask, cv2.COLOR_GRAY2BGR)
+            blur_mask = (blur_mask / 255* np.array([255, 0, 0])).astype("uint8")
+
+            cv2.imshow("blur_mask", blur_mask)
 
     cv2.imshow('window', frame)
     cv2.setMouseCallback('window', click_pos)
