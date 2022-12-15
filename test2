@@ -1,0 +1,40 @@
+#ライブラリのインポート
+import cv2
+import numpy as np
+
+cap = cv2.VideoCapture(0)
+#必要な情報を入力する
+#読み込むファイル名
+#変換したいH値（色）を指定
+hbase=80
+#H値の範囲を指定
+hupper=20
+hlower=20
+#H値のΔを指定
+hdelta=-200
+
+#処理開始
+while(True):
+    #画像読み込み
+    # Webカメラのフレーム取得
+    ret, frame = cap.read()
+
+    # 画像をRGBからHSVに変換
+    imghsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+    hmax=hbase+hupper
+    hmin=hbase-hlower
+    h=imghsv[:,:,0]
+    h=np.where((h<hmax) & (h>hmin),h+hdelta,h)
+    imghsv[:,:,0]=h
+    #変換後の画像を出力
+    img2=cv2.cvtColor(imghsv, cv2.COLOR_HSV2BGR)
+    cv2.imshow('change_color.jpg',img2)
+
+    # 終了オプション
+    k = cv2.waitKey(1)
+    if k == ord("q"):
+        break
+
+
+cap.release()
+cv2.destroyAllWindows()
