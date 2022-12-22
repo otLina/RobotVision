@@ -3,8 +3,7 @@ import cv2
 import numpy as np
 
 cap = cv2.VideoCapture(0)
-file_path = "./color_picker.png"
-offset = 20
+file_path = "./8.jpg"
 
 class mouseEventHandler:
     def __init__(self): 
@@ -21,8 +20,9 @@ class mouseEventHandler:
             #self.prevColor='prev(H,S,V)=('+str(H)+','+str(S)+','+str(V)+')'
             print(self.prevColor)
 
-    def getNextColor(self, hsv, event, x, y, flags, params):
+    def getNextColor(self, img, event, x, y, flags, params):
         if event == cv2.EVENT_LBUTTONDOWN:
+            hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
             H,S,V=hsv[y,x,:]
             self.nextColor = hsv[y,x,:]
             #self.nextColor='next(H,S,V)=('+str(H)+','+str(S)+','+str(V)+')'
@@ -59,8 +59,8 @@ class mouseEventHandler:
         そこで、0,2,3の画素は0として、1の画素は255とするようなmaskを用意
         """
         # maskを用意
-        mask = np.where((frame_mask == 0) | (frame_mask == 2) | (frame_mask == 3), 1, 0).astype("uint8")
-        mask2 = np.where((frame_mask == 0) | (frame_mask == 2) | (frame_mask == 3), 0, 255).astype("uint8")
+        mask = np.where((frame_mask == 0) | (frame_mask == 2), 1, 0).astype("uint8")
+        mask2 = np.where((frame_mask == 0) | (frame_mask == 2), 0, 255).astype("uint8")
         # サイズを元に戻す
         mask_resize = cv2.resize(mask, (int(mask.shape[1] * 4), int(mask.shape[0] * 4)))
         mask_resize2 = cv2.resize(mask2, (int(mask2.shape[1] * 4), int(mask2.shape[0] * 4)))
@@ -96,7 +96,7 @@ m = mouseEventHandler()
 while True:
     ret, frame = cap.read()
     img = cv2.imread(file_path)
-    img = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+    #img = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
 
     # 画像をRGBからHSVに変換
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
@@ -108,7 +108,7 @@ while True:
                         m.getPrevColor(hsv, event, x, y, flags, param))
     cv2.setMouseCallback('palette',
                         lambda event, x, y, flags, param: 
-                        m.getNextColor(hsv, event, x, y, flags, param))
+                        m.getNextColor(img, event, x, y, flags, param))
     
     if(m.showResult and m.prevColorChosen):
         cv2.imshow('result', m.changeColor(frame)[0])

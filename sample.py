@@ -19,4 +19,4 @@ while(True):
         grayscale = True
     
 cap.release()
-cv2.destroyAllwindows()
+cv2.destroyAllWindows()
